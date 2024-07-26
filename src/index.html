@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resizaar</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Resizaar</h1>
+
+    <div id="drop-zone">
+        Drag and drop your PDFs here to resize them for Kindle or Remarkable.
+    </div>
+
+    <select id="device-select">
+        <option value="kindle">Kindle</option>
+        <option value="remarkable">Remarkable</option>
+    </select>
+
+    <div id="file-list"></div>
+
+    <div id="resize-container">
+        <button id="resize-button">Resize PDFs</button>
+        <div id="progress-bar"></div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
