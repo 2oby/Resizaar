@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
 const path = require('path');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 
@@ -101,9 +101,25 @@ function resizePDF(filePath, device) {
       return;
     }
 
-    const command = `'${k2pdfoptPath}' -w ${deviceParams.width} -h ${deviceParams.height} -dpi ${deviceParams.dpi} -fs ${deviceParams.fontSize} -mag ${deviceParams.magnification} -vb 1 -mode def -j 0 -om 0.05,0.05,0.05,0.05 -ui- -fc- -wrap -y -o '${outputPath}' '${filePath}'`;
-    
-    const childProcess = exec(command);
+    const args = [
+      '-w', String(deviceParams.width),
+      '-h', String(deviceParams.height),
+      '-dpi', String(deviceParams.dpi),
+      '-fs', String(deviceParams.fontSize),
+      '-mag', String(deviceParams.magnification),
+      '-vb', '1',
+      '-mode', 'def',
+      '-j', '0',
+      '-om', '0.05,0.05,0.05,0.05',
+      '-ui-',
+      '-fc-',
+      '-wrap',
+      '-y',
+      '-o', outputPath,
+      filePath
+    ];
+
+    const childProcess = spawn(k2pdfoptPath, args);
 
     let conversionFinished = false;
     let totalPages = 0;
@@ -149,10 +165,10 @@ function resizePDF(filePath, device) {
       if (!conversionFinished) {
         clearInterval(checkInterval);
         childProcess.kill();
-        console.error('k2pdfopt process timed out after 5 minutes');
+        console.error('k2pdfopt process timed out after 60 minutes');
         reject(new Error('PDF conversion timed out'));
       }
-    }, 5 * 60 * 1000);
+    }, 60 * 60 * 1000);
   });
 }
 
