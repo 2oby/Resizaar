@@ -10,7 +10,10 @@
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux"
   },
-  "author": "2oby.com",
+  "author": {
+    "name": "2oby.com",
+    "email": "info@2oby.com"
+  },
   "license": "ISC",
   "devDependencies": {
     "electron": "^latest",
