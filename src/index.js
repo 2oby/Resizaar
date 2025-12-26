@@ -42,7 +42,7 @@ function getK2pdfoptPath() {
   if (platform === 'darwin') {
     executableName = arch === 'arm64' ? 'k2pdfopt_mac_ARM' : 'k2pdfopt_mac_x86';
   } else if (platform === 'win32') {
-    executableName = 'k2pdfopt_win_32.exe';
+    executableName = arch === 'x64' ? 'k2pdfopt_win_64.exe' : 'k2pdfopt_win_32.exe';
   } else if (platform === 'linux') {
     if (arch === 'x64') {
       executableName = 'k2pdfopt_lnx_64';
@@ -119,7 +119,20 @@ function resizePDF(filePath, device) {
       filePath
     ];
 
-    const childProcess = spawn(k2pdfoptPath, args);
+    // Log the path for debugging
+    console.log('k2pdfopt path:', k2pdfoptPath);
+    console.log('k2pdfopt exists:', fs.existsSync(k2pdfoptPath));
+    console.log('args:', args);
+
+    // Check if binary exists before spawning
+    if (!fs.existsSync(k2pdfoptPath)) {
+      reject(new Error(`k2pdfopt binary not found at: ${k2pdfoptPath}`));
+      return;
+    }
+
+    const childProcess = spawn(k2pdfoptPath, args, {
+      windowsHide: true
+    });
 
     let conversionFinished = false;
     let totalPages = 0;
@@ -150,7 +163,16 @@ function resizePDF(filePath, device) {
 
     childProcess.on('error', (error) => {
       console.error(`Failed to start k2pdfopt process: ${error.message}`);
+      console.error(`Error code: ${error.code}`);
+      console.error(`Full error:`, error);
       reject(error);
+    });
+
+    childProcess.on('close', (code) => {
+      console.log(`k2pdfopt process exited with code: ${code}`);
+      if (code !== 0 && !conversionFinished) {
+        reject(new Error(`k2pdfopt exited with code ${code}`));
+      }
     });
 
     const checkInterval = setInterval(() => {
