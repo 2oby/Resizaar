@@ -42,7 +42,8 @@ function getK2pdfoptPath() {
   if (platform === 'darwin') {
     executableName = arch === 'arm64' ? 'k2pdfopt_mac_ARM' : 'k2pdfopt_mac_x86';
   } else if (platform === 'win32') {
-    executableName = arch === 'x64' ? 'k2pdfopt_win_64.exe' : 'k2pdfopt_win_32.exe';
+    // Use 32-bit version for all Windows - the 64-bit version has MuPDF crashes
+    executableName = 'k2pdfopt_win_32.exe';
   } else if (platform === 'linux') {
     if (arch === 'x64') {
       executableName = 'k2pdfopt_lnx_64';
