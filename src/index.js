@@ -137,6 +137,7 @@ function resizePDF(filePath, device) {
     let conversionFinished = false;
     let totalPages = 0;
     let currentPage = 0;
+    let stderrOutput = '';
 
     childProcess.stdout.on('data', (data) => {
       const message = data.toString();
@@ -156,6 +157,7 @@ function resizePDF(filePath, device) {
 
     childProcess.stderr.on('data', (data) => {
       const message = data.toString();
+      stderrOutput += message;
       if (!message.toLowerCase().includes('warning')) {
         console.error(`k2pdfopt error: ${message.trim()}`);
       }
@@ -171,7 +173,8 @@ function resizePDF(filePath, device) {
     childProcess.on('close', (code) => {
       console.log(`k2pdfopt process exited with code: ${code}`);
       if (code !== 0 && !conversionFinished) {
-        reject(new Error(`k2pdfopt exited with code ${code}`));
+        const errorMsg = stderrOutput.trim() || `k2pdfopt exited with code ${code}`;
+        reject(new Error(errorMsg));
       }
     });
 

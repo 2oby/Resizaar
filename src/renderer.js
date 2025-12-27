@@ -65,7 +65,7 @@ resizeButton.addEventListener('click', async () => {
       alert('PDFs resized successfully!');
     } else {
       console.error('Failed to resize PDFs:', result.error);
-      alert('Failed to resize PDFs. Please check the console for more information.');
+      alert(`Failed to resize PDFs:\n\n${result.error}`);
     }
   } catch (error) {
     console.error('Error in resize process:', error);
